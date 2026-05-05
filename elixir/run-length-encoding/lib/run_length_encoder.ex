@@ -14,10 +14,10 @@ defmodule RunLengthEncoder do
     |> do_encode(1, "")
   end
 
-  def do_encode([], _count, results), do: results
-  def do_encode([head], count, results), do: encode_results(results, count, head)
+  defp do_encode([], _count, results), do: results
+  defp do_encode([head], count, results), do: encode_results(results, count, head)
 
-  def do_encode([head | tail], count, results) do
+  defp do_encode([head | tail], count, results) do
     if head == List.first(tail) do
       do_encode(tail, count + 1, results)
     else
@@ -42,7 +42,7 @@ defmodule RunLengthEncoder do
   defp do_decode([], result), do: result
   defp do_decode([[result]], _result), do: result
 
-  defp do_decode([[qty, chars] | tail] = args, result) do
+  defp do_decode([[qty, chars] | tail], result) do
     # get qty to an int
     qty = parse_int(qty)
 
