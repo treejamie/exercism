@@ -1,0 +1,1 @@
+{application,book_store,[{modules,['Elixir.BookStore']},{optional_applications,[]},{applications,[kernel,stdlib,elixir,logger]},{description,"book_store"},{registered,[]},{vsn,"0.1.0"}]}.
