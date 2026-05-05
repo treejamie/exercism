@@ -9,6 +9,7 @@ defmodule RunLengthEncoder do
   @spec encode(String.t()) :: String.t()
   def encode(string) do
     [
+      # I may be over thinking this.
       "",
       String.split(string, "", trim: true)
     ]
