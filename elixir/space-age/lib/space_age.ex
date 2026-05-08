@@ -16,20 +16,16 @@ defmodule SpaceAge do
   """
   @spec age_on(planet, pos_integer) :: {:ok, float} | {:error, String.t()}
   def age_on(planet, seconds) do
-    seconds
-    |> seconds_to_years()
-    |> years_to_planet(planet)
+    case {seconds / @seconds_in_year, planet} do
+      {years, :earth} -> {:ok, years}
+      {years, :mercury} -> {:ok, years * (1 / 0.2408467)}
+      {years, :venus} -> {:ok, years * (1 / 0.61519726)}
+      {years, :mars} -> {:ok, years / 1.8808158}
+      {years, :jupiter} -> {:ok, years / 11.86261}
+      {years, :saturn} -> {:ok, years / 29.447498}
+      {years, :uranus} -> {:ok, years / 84.016846}
+      {years, :neptune} -> {:ok, years / 164.79132}
+      {_years, _planet} -> {:error, "not a planet"}
+    end
   end
-
-  defp seconds_to_years(seconds), do: seconds / @seconds_in_year
-
-  defp years_to_planet(years, :earth), do: {:ok, years}
-  defp years_to_planet(years, :mercury), do: {:ok, years * (1 / 0.2408467)}
-  defp years_to_planet(years, :venus), do: {:ok, years * (1 / 0.61519726)}
-  defp years_to_planet(years, :mars), do: {:ok, years / 1.8808158}
-  defp years_to_planet(years, :jupiter), do: {:ok, years / 11.86261}
-  defp years_to_planet(years, :saturn), do: {:ok, years / 29.447498}
-  defp years_to_planet(years, :uranus), do: {:ok, years / 84.016846}
-  defp years_to_planet(years, :neptune), do: {:ok, years / 164.79132}
-  defp years_to_planet(_years, _planet), do: {:error, "not a planet"}
 end
