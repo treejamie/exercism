@@ -15,7 +15,7 @@ defmodule Sublist do
 
   defp equal?([], []), do: true
   defp equal?([], _), do: false
-  defp equal?(a, []), do: false
+  defp equal?(_, []), do: false
   defp equal?([h | tail_1], [h | tail_2]), do: equal?(tail_1, tail_2)
   defp equal?([_ | _], [_ | _]), do: false
 
