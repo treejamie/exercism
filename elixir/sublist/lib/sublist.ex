@@ -34,4 +34,25 @@ defmodule Sublist do
   defp starts_with?([], _), do: false
   defp starts_with?([h | tail_1], [h | tail_2]), do: starts_with?(tail_1, tail_2)
   defp starts_with?([_ | _], [_ | _]), do: false
+
+  # This solution is super smart, but it's slower than the above.
+  # still, it's wicked thinking.
+  # https://exercism.org/tracks/elixir/exercises/sublist/solutions/danielvu1994
+  # def compare(a, b) do
+  #   cond do
+  #     equal?(a, b) -> :equal
+  #     contains?(b, a) -> :sublist
+  #     contains?(a, b) -> :superlist
+  #     true -> :unequal
+  #   end
+  # end
+
+  # defp equal?(a, b), do: a === b
+
+  # defp contains?(a, b) when length(a) < length(b), do: false
+
+  # defp contains?(a, b) do
+  #   sub = Enum.take(a, length(b))
+  #   equal?(sub, b) or contains?(tl(a), b)
+  # end
 end
