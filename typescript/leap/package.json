@@ -34,5 +34,8 @@
     "lint:types": "corepack yarn tsc --noEmit -p .",
     "lint:ci": "corepack yarn eslint . --ext .tsx,.ts"
   },
-  "packageManager": "yarn@4.5.1"
+  "packageManager": "yarn@4.5.1",
+  "resolutions": {
+    "@babel/plugin-transform-modules-systemjs": "^7.29.4"
+  }
 }
