@@ -13,16 +13,21 @@ defmodule BookStore do
     # we can use Enum.frequency to drive that logic and take the
     # max value from that list.
     basket
-    |> make_groups()
-    |> Enum.map(fn group ->
-      Enum.map(basket, fn item ->
-        IO.inspect({group, item})
-        # if item not in group do
-        #   group ++ [item]
-        # end
-      end)
-    end)
-    |> IO.inspect(label: "groups")
+    |> Enum.frequencies()
+    |> Map.values()
+    |> Enum.max()
+
+    # |> make_groups()
+    # |> Enum.flat_map(fn group ->
+    #   transformed_group =
+    #     Enum.map(basket, fn item ->
+    #       # IO.inspect({group, item})
+    #       if item not in group do
+    #         group ++ [item]
+    #       end
+    #     end)
+    # end)
+    # |> IO.inspect(label: "groups")
 
     # now we have the groups we want to iterate over each item
     # in the basket, placing each item into one of the groups so
