@@ -16,9 +16,10 @@ defmodule BookStore do
     |> make_groups()
     |> Enum.map(fn group ->
       Enum.map(basket, fn item ->
-        if item not in group do
-          group ++ [item]
-        end
+        IO.inspect({group, item})
+        # if item not in group do
+        #   group ++ [item]
+        # end
       end)
     end)
     |> IO.inspect(label: "groups")
