@@ -49,14 +49,6 @@ defmodule BookStore do
     end
   end
 
-  def calculate_price(groups) do
-    Enum.reduce(groups, 0, fn group, acc ->
-      qty = group |> length()
-
-      qty * price(qty) + acc
-    end)
-  end
-
   # price with discount applied
   defp price(1), do: @price
   defp price(2), do: @price - 40
