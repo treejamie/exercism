@@ -7,42 +7,56 @@ defmodule BookStore do
   """
   @spec total(basket :: [book]) :: integer
   def total(basket) do
+    # we need to know how many "groups" the basket needs to be
+    # in, the hard rule here is that it would un unoptimum for
+    # a book type to be in a basket group more than once. So
+    # we can use Enum.frequency to drive that logic and take the
+    # max value from that list.
     basket
-    |> to_quantities()
-    |> IO.inspect(label: "👋👋")
-    |> calculate_price()
+    |> make_groups()
+    # now we have the groups we want to iterate over each item
+    # in the basket, placing each item into one of the groups so
+    # that everything in the group is unique.
+    |> do_distribute(basket)
+    |> IO.inspect()
   end
 
-  @doc """
-  We only need to know the distribution of quantities for each book type.
+  defp do_distribute(groups, []), do: groups
 
-  Also, sort descending.
+  defp do_distribute(groups, [item | rest]) do
+    IO.inspect(item, label: "👋👋")
 
-  One one
-  [1,1,1] -> [1]
+    # this is a good case for reduce_while as once
+    # an item is placed, there is no point in continuing
 
-  Three fives, two fours and one one
-  [1,4,4,5,5,5] -> [3,2,1]
+    groups =
+      groups
+      |> Enum.reduce(fn group, acc ->
+        IO.inspect(group)
 
-  Quantities of each type matches type - mental mindgames,
-  like seeing "white" written in red ink.
-  [1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5] -> [1,2,3,4,5]
+        if item in group do
+          acc
+        else
+          [acc | item]
+        end
+        |> IO.inspect(label: "reduce")
+      end)
 
-  Remember that you're after this function you don't need the 'types'
-  you're just interested in the quantity distribution.
+    do_distribute(groups, rest)
+  end
 
-  So three fives, two fours and one one [1,4,4,5,5,5] translated into
-  [3,2,1] contains all the information you need. There's three of one kind,
-  two of another, and one of another.
+  # the basket needs groups to organise everything into.
+  # ie: [1, 1, 2, 2, 3, 3, 4, 5] -> [[1,2,3,4],[1,2,3,5]]
+  # the groups are decided by the frequencies of things
+  # in the basket
+  defp make_groups(quantities) do
+    max_groups =
+      quantities
+      |> Enum.frequencies()
+      |> Map.values()
+      |> Enum.max()
 
-
-
-  """
-  def to_quantities(quantities) do
-    quantities
-    |> Enum.frequencies()
-    |> Map.values()
-    |> Enum.sort(:desc)
+    List.duplicate([], max_groups)
   end
 
   def calculate_price(quantities) do
@@ -53,9 +67,9 @@ defmodule BookStore do
     |> Enum.min()
   end
 
-  def discount(1), do: 1.00
-  def discount(2), do: 0.95
-  def discount(3), do: 0.90
-  def discount(4), do: 0.80
-  def discount(5), do: 0.75
+  defp discount(1), do: 1.00
+  defp discount(2), do: 0.95
+  defp discount(3), do: 0.90
+  defp discount(4), do: 0.80
+  defp discount(5), do: 0.75
 end
