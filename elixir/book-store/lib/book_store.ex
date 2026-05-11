@@ -14,11 +14,30 @@ defmodule BookStore do
     # max value from that list.
     basket
     |> make_groups()
+    |> Enum.map(fn group ->
+      Enum.map(basket, fn item ->
+        if item not in group do
+          group ++ [item]
+        end
+      end)
+    end)
+    |> IO.inspect(label: "groups")
+
     # now we have the groups we want to iterate over each item
     # in the basket, placing each item into one of the groups so
     # that everything in the group is unique.
-    |> do_distribute(basket)
-    |> IO.inspect()
+    #
+    # Enum.map(groups
+
+    # Enum.map(basket, fn item ->
+    #   groups
+    #   |> Enum.map(fn group ->
+    #   end)
+    # end)
+    # |> IO.inspect(label: "result")
+
+    # |> do_distribute(basket)
+    # |> IO.inspect()
   end
 
   defp do_distribute(groups, []), do: groups
