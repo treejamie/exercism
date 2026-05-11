@@ -2,126 +2,65 @@ defmodule BookStore do
   @typedoc "A book is represented by its number in the 5-book series"
   @type book :: 1 | 2 | 3 | 4 | 5
 
+  @price 800
   @doc """
   Calculate lowest price (in cents) for a shopping basket containing books.
   """
   @spec total(basket :: [book]) :: integer
   def total(basket) do
-    # we need to know how many "groups" the basket needs to be
-    # in, the hard rule here is that it would un unoptimum for
-    # a book type to be in a basket group more than once. So
-    # we can use Enum.frequency to drive that logic and take the
-    # max value from that list.
     basket
-    |> Enum.reduce([], fn item, acc ->
-      acc =
-        cond do
-          List.first(acc) == nil -> [[item]]
-          true -> acc
-        end
-
-      acc =
-        acc
-        |> Enum.map(fn group ->
-          if item not in group do
-            [group | item]
-          else
-            [[group], [item]]
-          end
-        end)
-
-      acc
+    |> Enum.sort()
+    # greedy distribute works for nearly all cases excect 5/3 groupings
+    |> Enum.reduce([], fn item, groups ->
+      distribute(item, groups)
     end)
-
-    # basket
-    # |> Enum.frequencies()
-    # |> Map.values()
-    # |> Enum.max()
-    # |> then(&(1..&1))
-    # |> IO.inspect()
-    # |> Enum.map(fn _ -> [] end)
-    # |> Enum.reduce(fn group, acc ->
-    #   IO.inspect(group)
-    # end)
-
-    # |> make_groups()
-    # |> Enum.flat_map(fn group ->
-    #   transformed_group =
-    #     Enum.map(basket, fn item ->
-    #       # IO.inspect({group, item})
-    #       if item not in group do
-    #         group ++ [item]
-    #       end
-    #     end)
-    # end)
-    # |> IO.inspect(label: "groups")
-
-    # now we have the groups we want to iterate over each item
-    # in the basket, placing each item into one of the groups so
-    # that everything in the group is unique.
-    #
-    # Enum.map(groups
-
-    # Enum.map(basket, fn item ->
-    #   groups
-    #   |> Enum.map(fn group ->
-    #   end)
-    # end)
-    # |> IO.inspect(label: "result")
-
-    # |> do_distribute(basket)
-    # |> IO.inspect()
+    # convert to a map of frequencies, we're looking for %{5 => 1, 3 => 1}
+    |> Enum.frequencies_by(&length/1)
+    # fix the 5/3 groups
+    |> rebalance()
+    #  and now we
+    |> Enum.reduce(0, fn {size, count}, acc -> acc + count * size * price(size) end)
   end
 
-  defp do_distribute(groups, []), do: groups
+  defp rebalance(counts) do
+    # what pairs can we take
+    pairs = min(Map.get(counts, 5, 0), Map.get(counts, 3, 0))
 
-  defp do_distribute(groups, [item | rest]) do
-    IO.inspect(item, label: "👋👋")
-
-    # this is a good case for reduce_while as once
-    # an item is placed, there is no point in continuing
-
-    groups =
-      groups
-      |> Enum.reduce(fn group, acc ->
-        IO.inspect(group)
-
-        if item in group do
-          acc
-        else
-          [acc | item]
-        end
-        |> IO.inspect(label: "reduce")
-      end)
-
-    do_distribute(groups, rest)
+    counts
+    |> Map.update(5, 0, &(&1 - pairs))
+    |> Map.update(3, 0, &(&1 - pairs))
+    |> Map.update(4, pairs * 2, &(&1 + pairs * 2))
   end
 
-  # the basket needs groups to organise everything into.
-  # ie: [1, 1, 2, 2, 3, 3, 4, 5] -> [[1,2,3,4],[1,2,3,5]]
-  # the groups are decided by the frequencies of things
-  # in the basket
-  defp make_groups(quantities) do
-    max_groups =
-      quantities
-      |> Enum.frequencies()
-      |> Map.values()
-      |> Enum.max()
-
-    List.duplicate([], max_groups)
+  # this is the first call in greedy distribution
+  defp distribute(item, []) do
+    [[item]]
   end
 
-  def calculate_price(quantities) do
-    Enum.map(quantities, fn qty ->
-      discount(qty) * 800 * qty
+  # and successive calls go through this one
+  defp distribute(item, [group | rest]) do
+    if item in group do
+      # this group already has item, try the next one
+      # the key here is how the recurse is done
+      [group | distribute(item, rest)]
+    else
+      # place item here and leave the rest unchanged
+      [[item | group] | rest]
+    end
+  end
+
+  def calculate_price(groups) do
+    Enum.reduce(groups, 0, fn group, acc ->
+      qty = group |> length()
+
+      qty * price(qty) + acc
     end)
-    |> IO.inspect(label: "🍓🍓")
-    |> Enum.min()
   end
 
-  defp discount(1), do: 1.00
-  defp discount(2), do: 0.95
-  defp discount(3), do: 0.90
-  defp discount(4), do: 0.80
-  defp discount(5), do: 0.75
+  # price with discount applied
+  defp price(1), do: @price
+  defp price(2), do: @price - 40
+  defp price(3), do: @price - 80
+  defp price(4), do: @price - 160
+  defp price(5), do: @price - 200
 end
