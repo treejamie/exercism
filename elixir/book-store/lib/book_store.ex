@@ -13,9 +13,36 @@ defmodule BookStore do
     # we can use Enum.frequency to drive that logic and take the
     # max value from that list.
     basket
-    |> Enum.frequencies()
-    |> Map.values()
-    |> Enum.max()
+    |> Enum.reduce([], fn item, acc ->
+      acc =
+        cond do
+          List.first(acc) == nil -> [[item]]
+          true -> acc
+        end
+
+      acc =
+        acc
+        |> Enum.map(fn group ->
+          if item not in group do
+            [group | item]
+          else
+            [[group], [item]]
+          end
+        end)
+
+      acc
+    end)
+
+    # basket
+    # |> Enum.frequencies()
+    # |> Map.values()
+    # |> Enum.max()
+    # |> then(&(1..&1))
+    # |> IO.inspect()
+    # |> Enum.map(fn _ -> [] end)
+    # |> Enum.reduce(fn group, acc ->
+    #   IO.inspect(group)
+    # end)
 
     # |> make_groups()
     # |> Enum.flat_map(fn group ->
